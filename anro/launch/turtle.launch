@@ -1,0 +1,12 @@
+<launch>
+
+  <group ns="turtlesim">
+    <node pkg="turtlesim" name="sim" type="turtlesim_node">
+    <param name="fwd" value="w"/>
+    <param name="bwd" value="s"/>
+    <param name="rgh" value="d"/>
+    <param name="lft" value="a"/>
+    </node>
+  </group>
+
+</launch>
