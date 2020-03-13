@@ -1,0 +1,42 @@
+Dokumentacja Zadanie nr1
+
+Katalogi w pakiecie "anro":
+
+1)launch:
+
+turtle.launch (plik launch, po odpaleniu następuje inicjacja węzła "turtlesim_node", z określonymi parametrami służącemi do sterowania żółwiem) 
+
+2)scripts:
+
+add_ints.py	(utworzone przy samouczku,nieistotne dla zad1)
+add_ints_cl.py	(utworzone przy samouczku,nieistotne dla zad1)
+listener.py	(utworzone przy samouczku,nieistotne dla zad1)
+
+talker.py (plik py, utworzony przez nas "Publisher", zaimplementowana funkcja do odczytu znaków wpisywanych z klawiatury, utworzony węzęł "talker" publikujący na temacie '/turtlesim/turtle1/cmd_vel', pobranie parametrów z serwera parametrów i zapisanie ich w odpowiedniej zmiennej params, w pętli głównej programu sprawdzenie, czy któryś z przycisków nie został wciśnięty)
+
+3)srv:
+
+AddTwoInts.srv	(utworzone przy samouczku,nieistotne dla zad1)
+
+Jak zainicjalizować?
+
+1)Należy uruchomić terminal i wpisać komendę: roscore
+
+2)Należy uruchomić kolejny terminal.Kolejno:
+
+cd catkin_ws
+source /opt/ros/melodic/setup.bash
+source devel/setup.bash
+cd src/solawa_rudnicki/anro/launch
+roslaunch turtle.launch
+
+3)Należy uruchomić terminal.Kolejno:
+
+cd catkin_ws
+source /opt/ros/melodic/setup.bash
+source devel/setup.bash
+cd src/solawa_rudnicki/anro/scripts
+rosrun anro talker.py
+
+
+
