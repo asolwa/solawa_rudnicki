@@ -8,5 +8,5 @@
     <param name="lft" value="a"/>
     </node>
   </group>
-
+    <node name="talker" pkg="anro" type="talker.py" />
 </launch>
