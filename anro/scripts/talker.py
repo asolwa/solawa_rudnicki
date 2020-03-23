@@ -57,9 +57,11 @@ def talker():
     while not rospy.is_shutdown():
         vel = Twist()
 
+	
+        if getKey() == 'x':
+	    break
         if getKey() == params["fwd"]:
             vel.linear.x = 1
-
         if getKey() == params["bwd"]:
             vel.linear.x = -1
         if getKey() == params["rgh"]:
