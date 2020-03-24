@@ -1,0 +1,21 @@
+<?xml version="1.0">
+<robot name="manipulator" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<xacro:property name="parameters" value="${load_yaml('../yaml/urdf.yaml')}"/>
+	<material name="white">
+		<color rgba="1 1 1 1"/>
+	</material>
+	<material name="black">
+		<color rgba="0 0 0 1"/>
+	</material>
+
+	<link name="base_link">
+
+	</link>
+	<link name="">
+	<link name="">
+	<link name="">
+
+	<joint name="joint_1"/>
+
+
+</robot>
