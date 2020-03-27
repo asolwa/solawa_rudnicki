@@ -1,27 +1,39 @@
-#!/usr/bin/env python
+#! /usr/bin/python
+
 import json
 
+from tf.transformations import *
+
+xaxis, yaxis, zaxis = (1, 0, 0), (0, 1, 0), (0, 0, 1)
 def convertToFile():
-	parameters={}
-	with open('../yaml/dh.json','r') as file:
-		parameters=json.loads(file.read())
-	with open('../yaml/urdf.yaml','w') as file:
-		for key in parameters.keys():
-			a,d,alpha,th= parameters[key]
-			a=float(a)
-			d=float(d)
-			alpha=float(alpha)
-			th=float(th)
+    with open('../yaml/dh.json', 'r') as file:
+        param = json.loads(file.read())
 
-			file.write(key +":\n")
-			file.write("	j_rpy: %s 0 0\n" %(alpha))
-			file.write("	j_xyz: %s 0 %s\n" %(a,d))
-			file.write("	l_rpy: 0 0 0\n")
-			file.write("	l_xyz: %s 0 0\n" %(a/2))
-			file.write("	l_len: %s\n" %(a))
+    with open('../yaml/urdf.yaml', 'w') as file:
+        for key in param.keys():
+            a, d, alpha, th = param[key]
+            a=float(a)
+            d=float(d)
+            alpha=float(alpha)
+            th=float(th)
 
+            tz = translation_matrix((0, 0, d))
+            rz = rotation_matrix(th, zaxis)
+            tx = translation_matrix((a, 0, 0))
+            rx = rotation_matrix(alpha, xaxis)
+
+            matrix = concatenate_matrices(tz, rz, tx, rx)
+
+            rpy = euler_from_matrix(matrix)
+            xyz = translation_from_matrix(matrix)
+
+            file.write(key + ":\n")
+            file.write("  j_xyz: {} {} {}\n".format(*xyz))
+            file.write("  j_rpy: {} {} {}\n".format(*rpy))
+            file.write("  l_xyz: {} 0 0\n".format(xyz[0] / 2))
+            file.write("  l_rpy: 0 0 0\n")
+            file.write("  l_len: {}\n".format(a))
 if __name__ == '__main__':
-    try:
-        convertToFile()
-    except RuntimeError:
-        pass
+    param = {}
+    results = ''
+    convertToFile()
