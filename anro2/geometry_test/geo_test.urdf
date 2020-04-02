@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:property name="props" value="${load_yaml('..//yaml/urdf.yaml')}"/>
+    <xacro:property name="l_width" value="0.02"/>
+    <xacro:property name="base_len" value="0.03"/>
+    <xacro:property name="base_rad" value="0.03"/> 
+  
+ 
+    <material name="color1">
+        <color rgba="0.5 0.1 0.1 0.5"/>
+    </material>
+
+    <material name="color2"> 
+        <color rgba="0.5 0.7 0.3 0.3"/>
+    </material>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="${base_len}" radius="${base_rad}"/>
+            </geometry>
+            <origin xyz="0 0 -0.02"/>
+            <material name="color2"/>
+        </visual>
+    </link>
+
+    <link name="link_1">
+        <visual>
+            <geometry>
+                <box size="${props['i2']['l_len']} ${l_width} ${l_width}"/>
+            </geometry>
+            <origin xyz="${props['i2']['l_xyz']}" rpy="${props['i2']['l_rpy']}"/>
+            <material name="color1"/>
+        </visual>
+    </link>
+
+
+    <joint name="base_to_link1" type="revolute">
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <origin xyz="${props['i1']['j_xyz']}" rpy="${props['i1']['j_rpy']}"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000.0" lower="-3.1415" upper="3.1415" velocity="0.5"/>
+    </joint>
+
+   
+
+</robot>
