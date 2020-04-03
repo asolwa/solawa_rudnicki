@@ -8,15 +8,9 @@ turtle.launch (plik launch, po odpaleniu następuje inicjacja węzła "turtlesim
 
 2)scripts:
 
-add_ints.py	(utworzone przy samouczku,nieistotne dla zad1)
-add_ints_cl.py	(utworzone przy samouczku,nieistotne dla zad1)
-listener.py	(utworzone przy samouczku,nieistotne dla zad1)
 
 talker.py (plik py, utworzony przez nas "Publisher", zaimplementowana funkcja do odczytu znaków wpisywanych z klawiatury, utworzony węzęł "talker" publikujący na temacie '/turtlesim/turtle1/cmd_vel', pobranie parametrów z serwera parametrów i zapisanie ich w odpowiedniej zmiennej params, w pętli głównej programu sprawdzenie, czy któryś z przycisków nie został wciśnięty)
 
-3)srv:
-
-AddTwoInts.srv	(utworzone przy samouczku,nieistotne dla zad1)
 
 Jak zainicjalizować?
 
