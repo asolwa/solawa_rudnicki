@@ -1,28 +1,27 @@
 #! /usr/bin/python
 
 import json
-
 from tf.transformations import *
 
-xaxis, yaxis, zaxis = (1, 0, 0), (0, 1, 0), (0, 0, 1)
+xaxis,zaxis = (1, 0, 0),(0, 0, 1)
 def convertToFile():
     with open('../yaml/dh.json', 'r') as file:
         param = json.loads(file.read())
 
     with open('../yaml/urdf.yaml', 'w') as file:
         for key in param.keys():
-            a, d, alpha, th = param[key]
+            a, d, alpha, th = param[key]    #parametry w notacji DH
             a=float(a)
             d=float(d)
             alpha=float(alpha)
             th=float(th)
 
-            tz = translation_matrix((0, 0, d))
-            rz = rotation_matrix(th, zaxis)
-            tx = translation_matrix((a, 0, 0))
-            rx = rotation_matrix(alpha, xaxis)
+            tz = translation_matrix((0, 0, d))  #macierz translacji wzdluz osi z i-1
+            rz = rotation_matrix(th, zaxis)     #macierz obrotu wokol osi z i-1
+            tx = translation_matrix((a, 0, 0))  #macierz translacji wzdluz osi x i
+            rx = rotation_matrix(alpha, xaxis)  #macierz obrotu wokol osi x i
 
-            matrix = concatenate_matrices(tz, rz, tx, rx)
+            matrix = concatenate_matrices(tz, rz, tx, rx)  #macierz,bedaca wynikiem wymnozenia poszczegolnych macierzy
 
             rpy = euler_from_matrix(matrix)
             xyz = translation_from_matrix(matrix)
