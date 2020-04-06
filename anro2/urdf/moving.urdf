@@ -2,9 +2,9 @@
 <robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:property name="props" value="${load_yaml('..//yaml/urdf.yaml')}"/>
     <xacro:property name="l_width" value="0.02"/>
-    <xacro:property name="base_len" value="0.03"/>
+    <xacro:property name="base_len" value="0.15"/>
     <xacro:property name="base_rad" value="0.03"/> 
-    <xacro:property name="link3_len" value="0.04"/>  
+    <xacro:property name="link3_len" value="0.16"/>  
     <xacro:property name="link3_rad" value="0.02"/>  
  
     <material name="blue">
@@ -20,7 +20,7 @@
             <geometry>
                 <cylinder length="${base_len}" radius="${base_rad}"/>
             </geometry>
-            <origin xyz="0 0 -0.02"/>
+            <origin xyz="0 0 -0.06"/>
             <material name="white"/>
         </visual>
     </link>
@@ -76,7 +76,7 @@
         <parent link="link_2"/>
         <child link="link_3"/>
         <origin xyz="${props['i3']['j_xyz']}" rpy="${props['i3']['j_rpy']}"/>
-        <limit effort="1000.0" lower="0.05" upper="0.2" velocity="0.5"/>
+        <limit effort="1000.0" lower="0.13" upper="0.24" velocity="0.5"/>
         <axis xyz="0 0 1"/>
     </joint>
 
