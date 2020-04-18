@@ -1,20 +1,29 @@
+#! /usr/bin/python
+
 import json
 import rospy
+import os
+import rospkg
 from tf.transformations import *
 from sensor_msgs.msg import *
 from geometry_msgs.msg import *
-from visualization_msgs import Marker
 xaxis=(1,0,0)
 zaxis=(0,0,1)
 param = {}
-publisher=rospy.Publisher('pose',PoseStamped,queue_size=100)
+rospack = rospkg.RosPack()
+PACKAGE_PATH = rospack.get_path('anro3')
 
 def loadFromFile():
+    global param
     results = ''
-    with open('../yaml/dh.json', 'r') as file:
+    with open(os.path.join(PACKAGE_PATH, 'yaml', 'dh.json'), 'r') as file:
         param = json.loads(file.read())    
+    rospy.loginfo(param)
+    rospy.loginfo("hejjjol")
+
 def callback(data):
 
+    publisher=rospy.Publisher('pose/update',PoseStamped,queue_size=100)
     pose=PoseStamped()
     result_matrix=translation_matrix((0,0,0))
 
@@ -33,8 +42,10 @@ def callback(data):
         matrix = concatenate_matrices(tz, rz, tx, rx)  
         result_matrix= concatenate_matrices(result_matrix,matrix)
 
+    x, y, z = translation_from_matrix(result_matrix)
+
     pose.header.frame_id = "base_link";
-    pose.header.stamp = ros.Time.now()
+    pose.header.stamp = rospy.Time.now()
     pose.pose.position.x=x
     pose.pose.position.y=y
     pose.pose.position.z=z+d
@@ -44,16 +55,19 @@ def callback(data):
     pose.pose.orientation.y=y_orient
     pose.pose.orientation.z=z_orient
     pose.pose.orientation.w=w_orient
+    rospy.loginfo("heeeeeja")
 
     publisher.publish(pose)
 
 
 def listener():
 
-    rospy.init_node('NONKDL',anonymous=True)
-    ropsy.Subscriber("jointState",JointState,callback)
+    rospy.loginfo("listener")
+    rospy.Subscriber("joint_states",JointState, callback)
     rospy.spin()
 
+
 if __name__ == '__main__':
+    rospy.init_node('NONKDL',anonymous=True)
     loadFromFile()
     listener()
