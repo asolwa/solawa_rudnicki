@@ -84,7 +84,7 @@ if __name__ == '__main__':
     rospy.init_node('NONKDL_KIN', anonymous=True)
 
     pub = rospy.Publisher('nkdl_pose', PoseStamped, queue_size=10)
-    marker_pub = rospy.Publisher('nkdl_visualization', Marker, queue_size=100)
+    marker_pub = rospy.Publisher('nkdl_visual', Marker, queue_size=100)
 
     rospy.Subscriber('joint_states', JointState, forward_kinematics)
 
