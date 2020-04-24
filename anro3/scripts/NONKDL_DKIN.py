@@ -10,6 +10,7 @@ from visualization_msgs.msg import Marker
 
 xaxis= (1,0,0)
 zaxis= (0,0,1)
+print "hej"
 
 
 def forward_kinematics(data):
@@ -82,15 +83,16 @@ def forward_kinematics(data):
 
 if __name__ == '__main__':
     rospy.init_node('NONKDL_KIN', anonymous=True)
+    params = {}
+    print os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
+        params = json.loads(file.read())
+
 
     pub = rospy.Publisher('nkdl_pose', PoseStamped, queue_size=10)
     marker_pub = rospy.Publisher('nkdl_visual', Marker, queue_size=100)
 
     rospy.Subscriber('joint_states', JointState, forward_kinematics)
 
-    params = {}
-    print os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
-        params = json.loads(file.read())
 
     rospy.spin()
