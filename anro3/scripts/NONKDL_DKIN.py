@@ -34,7 +34,7 @@ def forward_kinematics(data):
 
     a, d, alpha, th = params['i3']
     alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-    tz = translation_matrix((0, 0, data.position[2]))
+    tz = translation_matrix((0, 0, data.position[2]-d))
     rz = rotation_matrix(th, zaxis)
     tx = translation_matrix((a, 0, 0))
     rx = rotation_matrix(alpha, xaxis)

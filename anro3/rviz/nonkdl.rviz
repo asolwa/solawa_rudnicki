@@ -147,7 +147,7 @@ Visualization Manager:
       Shaft Length: 0.20000000298023224
       Shaft Radius: 0.019999999552965164
       Shape: Arrow
-      Topic: /kdl_pose
+      Topic: /nkdl_pose
       Unreliable: false
       Value: true
     - Class: rviz/Marker
@@ -201,10 +201,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.08000011742115021
+      Pitch: 0.31000009179115295
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.1449991464614868
+      Yaw: 3.434999704360962
     Saved:
       - Class: rviz/Orbit
         Distance: 1.5
