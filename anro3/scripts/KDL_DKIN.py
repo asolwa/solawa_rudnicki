@@ -15,48 +15,6 @@ zaxis= (0,0,1)
 
 def forward_kinematics(data):
 
-    result_matrix=translation_matrix((0,0,0))
-
-    a, d, alpha, th = params['i1']
-    alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-    tz = translation_matrix((0, 0, d))
-    rz = rotation_matrix(data.position[0], zaxis)
-    tx = translation_matrix((a, 0, 0))
-    rx = rotation_matrix(alpha, xaxis)
-    T1 = concatenate_matrices(rx, tx, rz, tz)
-
-    a, d, alpha, th = params['i2']
-    alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-    tz = translation_matrix((0, 0, d))
-    rz = rotation_matrix(data.position[1], zaxis)
-    tx = translation_matrix((a, 0, 0))
-    rx = rotation_matrix(alpha, xaxis)
-    T2 = concatenate_matrices(rx, tx, rz, tz)
-
-    a, d, alpha, th = params['i3']
-    alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-    tz = translation_matrix((0, 0, data.position[2]))
-    rz = rotation_matrix(th, zaxis)
-    tx = translation_matrix((a, 0, 0))
-    rx = rotation_matrix(alpha, xaxis)
-    T3 = concatenate_matrices(rx, tx, rz, tz)
-
-    result_matrix = concatenate_matrices(T1, T2, T3)
-    x, y, z = translation_from_matrix(result_matrix)
-    qx, qy, qz, qw = quaternion_from_matrix(result_matrix)
-
-    pose = PoseStamped()
-    pose.header.frame_id = 'base_link'
-    pose.header.stamp = rospy.Time.now()
-    pose.pose.position.x = x
-    pose.pose.position.y = y
-    pose.pose.position.z = z
-    pose.pose.orientation.x = qx
-    pose.pose.orientation.y = qy
-    pose.pose.orientation.z = qz
-    pose.pose.orientation.w = qw
-
-
 #KDL 
     chain = PyKDL.Chain()
     joint_movement = [PyKDL.Joint.RotZ, PyKDL.Joint.RotZ,PyKDL.Joint.TransZ] 
