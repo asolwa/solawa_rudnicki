@@ -1,36 +1,34 @@
 #! /usr/bin/python
 
-import rospy
+import PyKDL
 import json
 import os
-import PyKDL
-from tf.transformations import *
-from sensor_msgs.msg import JointState
+import rospy
 from geometry_msgs.msg import PoseStamped
+from sensor_msgs.msg import JointState
 from visualization_msgs.msg import Marker
 
-xaxis= (1,0,0)
-zaxis= (0,0,1)
-
-
 def forward_kinematics(data):
-
-#KDL 
     chain = PyKDL.Chain()
     joint_movement = [PyKDL.Joint.RotZ, PyKDL.Joint.RotZ,PyKDL.Joint.TransZ] 
     n_joints = 3
     for i in range(n_joints):
-	a, d, alpha, th = params['i'+str(i+1)]
-	alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-	frame = PyKDL.Frame()
-	joint = PyKDL.Joint(joint_movement[i])
-	frame = frame.DH(a, alpha, d, th)
-	segment = PyKDL.Segment(joint, frame)
-	chain.addSegment(segment)
+        _, d, alpha, th = params['i'+str(i+1)]
+        try:
+            a, _, _, _ = params['i'+str(i+2)]
+        except:
+            a = 0
+
+        alpha, a, d, th = float(alpha), float(a), float(d), float(th)
+        frame = PyKDL.Frame()
+        joint = PyKDL.Joint(joint_movement[i])
+        frame = frame.DH(a, alpha, d, th)
+        segment = PyKDL.Segment(joint, frame)
+        chain.addSegment(segment)
 
     joints = PyKDL.JntArray(n_joints)
-    for i in range(n_joints-1):
-	    joints[i] = data.position[i]
+    joints[0] = data.position[0]
+    joints[1] = data.position[1]
     joints[2] = -data.position[2]
     fk=PyKDL.ChainFkSolverPos_recursive(chain)
     finalFrame=PyKDL.Frame()
@@ -79,11 +77,9 @@ if __name__ == '__main__':
     with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
         params = json.loads(file.read())
 
-
     pub = rospy.Publisher('kdl_pose', PoseStamped, queue_size=10)
     marker_pub = rospy.Publisher('kdl_visual', Marker, queue_size=100)
 
     rospy.Subscriber('joint_states', JointState, forward_kinematics)
-
 
     rospy.spin()
