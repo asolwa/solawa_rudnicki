@@ -92,7 +92,7 @@ def forward_kinematics(data):
 
     marker = Marker()
     marker.header.frame_id = 'base_link'
-    marker.type = marker.SPHERE
+    marker.type = marker.CUBE
     marker.action = marker.ADD
     marker.pose.orientation.w = 1
 
@@ -109,8 +109,8 @@ def forward_kinematics(data):
     marker.pose.orientation.z = quaterions[1];
     marker.pose.orientation.w = quaterions[0];
     marker.color.a = 0.7
-    marker.color.r = 0.5
-    marker.color.g = 0.0
+    marker.color.r = 0.2
+    marker.color.g = 0.8
     marker.color.b = 0.6
     marker_pub.publish(marker)
 

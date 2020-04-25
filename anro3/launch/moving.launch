@@ -2,7 +2,7 @@
 	
     <param name="robot_description" command="xacro --inorder '$(find anro3)/urdf/moving.urdf'"/>
     <param name ="use" value="true"/>
-    <arg name="rvizconfig" default="$(find anro3)/rviz/urdf.rviz" />
+    <arg name="rvizconfig" default="$(find anro3)/rviz/nonkdl.rviz" />
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
     <node name="joint_state_publisher_gui" pkg="joint_state_publisher" type="joint_state_publisher"/>
