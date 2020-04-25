@@ -11,7 +11,6 @@ from visualization_msgs.msg import Marker
 
 xaxis= (1,0,0)
 zaxis= (0,0,1)
-print("heeejo")
 
 
 def forward_kinematics(data):
@@ -26,22 +25,6 @@ def forward_kinematics(data):
     rx = rotation_matrix(alpha, xaxis)
     T1 = concatenate_matrices(rx, tx, rz, tz)
 
-    tx = PyKDL.Vector(0, 0, 0)
-    rx = PyKDL.Rotation.EulerZYX(0, 0, 0) 
-    Tr = PyKDL.Frame(rx, tx)
-    i=0
-    a, d, alpha, th = params['i'+str(i+1)]
-    alpha, a, d, th = float(alpha), float(a), float(d), float(th)
-    tz = PyKDL.Vector(0, 0, d)
-    rz = PyKDL.Rotation.EulerZYX(data.position[i], 0, 0)
-    tx = PyKDL.Vector(a, 0, 0)   
-    rx = PyKDL.Rotation.EulerZYX(0, 0, alpha) 
-    Tx = PyKDL.Frame(rx, tx)
-    Tz = PyKDL.Frame(rz, tz)
-    Tr *= Tx * Tz
-    import pdb;pdb.set_trace()
-    THD = PyKDL.HD(a, alpha, d,data.position[i]) 
-
     a, d, alpha, th = params['i2']
     alpha, a, d, th = float(alpha), float(a), float(d), float(th)
     tz = translation_matrix((0, 0, d))
@@ -50,7 +33,6 @@ def forward_kinematics(data):
     rx = rotation_matrix(alpha, xaxis)
     T2 = concatenate_matrices(rx, tx, rz, tz)
 
-    import pdb;pdb.set_trace()
     a, d, alpha, th = params['i3']
     alpha, a, d, th = float(alpha), float(a), float(d), float(th)
     tz = translation_matrix((0, 0, data.position[2]))
@@ -61,8 +43,6 @@ def forward_kinematics(data):
 
     result_matrix = concatenate_matrices(T1, T2, T3)
     x, y, z = translation_from_matrix(result_matrix)
-
-    import pdb;pdb.set_trace()
     qx, qy, qz, qw = quaternion_from_matrix(result_matrix)
 
     pose = PoseStamped()
@@ -75,6 +55,39 @@ def forward_kinematics(data):
     pose.pose.orientation.y = qy
     pose.pose.orientation.z = qz
     pose.pose.orientation.w = qw
+
+
+#KDL 
+    chain = PyKDL.Chain()
+    joint_movement = [PyKDL.Joint.RotZ, PyKDL.Joint.RotZ,PyKDL.Joint.TransZ] 
+    n_joints = 3
+    for i in range(n_joints):
+	a, d, alpha, th = params['i'+str(i+1)]
+	alpha, a, d, th = float(alpha), float(a), float(d), float(th)
+	frame = PyKDL.Frame()
+	joint = PyKDL.Joint(joint_movement[i])
+	frame = frame.DH(a, alpha, d, th)
+	segment = PyKDL.Segment(joint, frame)
+	chain.addSegment(segment)
+
+    joints = PyKDL.JntArray(n_joints)
+    for i in range(n_joints):
+	    joints[i] = data.position[i]
+    fk=PyKDL.ChainFkSolverPos_recursive(chain)
+    finalFrame=PyKDL.Frame()
+    fk.JntToCart(joints,finalFrame)
+    quaterions = finalFrame.M.GetQuaternion()
+
+    pose = PoseStamped()
+    pose.header.frame_id = 'base_link'
+    pose.header.stamp = rospy.Time.now()
+    pose.pose.position.x = finalFrame.p[0]
+    pose.pose.position.y = finalFrame.p[1] 
+    pose.pose.position.z = finalFrame.p[2]
+    pose.pose.orientation.x = quaterions[3]
+    pose.pose.orientation.y = quaterions[2]
+    pose.pose.orientation.z = quaterions[1]
+    pose.pose.orientation.w = quaterions[0]
     pub.publish(pose)
 
     marker = Marker()
@@ -88,13 +101,13 @@ def forward_kinematics(data):
     marker.scale.x = 0.09
     marker.scale.y = 0.09
     marker.scale.z = 0.09
-    marker.pose.position.x = x;
-    marker.pose.position.y = y;
-    marker.pose.position.z = z;
-    marker.pose.orientation.x = qx;
-    marker.pose.orientation.y = qy;
-    marker.pose.orientation.z = qz;
-    marker.pose.orientation.w = qw;
+    marker.pose.position.x = finalFrame.p[0];
+    marker.pose.position.y = finalFrame.p[1];
+    marker.pose.position.z = finalFrame.p[2];
+    marker.pose.orientation.x = quaterions[3];
+    marker.pose.orientation.y = quaterions[2];
+    marker.pose.orientation.z = quaterions[1];
+    marker.pose.orientation.w = quaterions[0];
     marker.color.a = 0.7
     marker.color.r = 0.5
     marker.color.g = 0.0
@@ -102,15 +115,14 @@ def forward_kinematics(data):
     marker_pub.publish(marker)
 
 if __name__ == '__main__':
-    rospy.init_node("NONKDL_KIN", anonymous=True)
+    rospy.init_node("KDL_KIN", anonymous=True)
     params = {}
-    print os.path.dirname(os.path.realpath(__file__))
     with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
         params = json.loads(file.read())
 
 
-    pub = rospy.Publisher('nkdl_pose', PoseStamped, queue_size=10)
-    marker_pub = rospy.Publisher('nkdl_visual', Marker, queue_size=100)
+    pub = rospy.Publisher('kdl_pose', PoseStamped, queue_size=10)
+    marker_pub = rospy.Publisher('kdl_visual', Marker, queue_size=100)
 
     rospy.Subscriber('joint_states', JointState, forward_kinematics)
 
