@@ -71,8 +71,9 @@ def forward_kinematics(data):
 	chain.addSegment(segment)
 
     joints = PyKDL.JntArray(n_joints)
-    for i in range(n_joints):
+    for i in range(n_joints-1):
 	    joints[i] = data.position[i]
+    joints[2] = -data.position[2]
     fk=PyKDL.ChainFkSolverPos_recursive(chain)
     finalFrame=PyKDL.Frame()
     fk.JntToCart(joints,finalFrame)
