@@ -10,9 +10,21 @@ from visualization_msgs.msg import Marker
 
 xaxis= (1,0,0)
 zaxis= (0,0,1)
+def checkScope(data):
+    if data.position[0]<scope['joint1'][0] or data.position[0]>scope['joint1'][1]:
+        return False
+    if data.position[1]<scope['joint2'][0] or data.position[1]>scope['joint2'][1]:
+        return False
+    if data.position[2]<scope['joint3'][0] or data.position[2]>scope['joint3'][1]:
+        return False
+
+    return True
 
 def forward_kinematics(data):
 
+    if not checkScope(data):
+        rospy.logwarn("Wrong joint value")
+        return
 #NOKDL
     result_matrix=translation_matrix((0,0,0))
 
@@ -83,9 +95,11 @@ def forward_kinematics(data):
 if __name__ == '__main__':
     rospy.init_node('NONKDL_KIN', anonymous=True)
     params = {}
-
+    scope = {}
     with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
         params = json.loads(file.read())
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/scope.json', 'r') as file:
+        scope = json.loads(file.read())
 
 
     pub = rospy.Publisher('nkdl_pose', PoseStamped, queue_size=10)
