@@ -10,15 +10,14 @@ from visualization_msgs.msg import Marker
 
 def forward_kinematics(data):
     chain = PyKDL.Chain()
-    joint_movement = [PyKDL.Joint.RotZ, PyKDL.Joint.RotZ,PyKDL.Joint.TransZ] 
-    n_joints = 3
+    joint_movement = [PyKDL.Joint.RotZ, PyKDL.Joint.RotZ,PyKDL.Joint.TransZ]  
+    n_joints = len(params.keys())
     for i in range(n_joints):
         _, d, alpha, th = params['i'+str(i+1)]
         try:
             a, _, _, _ = params['i'+str(i+2)]
         except:
-            a = 0
-
+            a, _ = 0, 0
         alpha, a, d, th = float(alpha), float(a), float(d), float(th)
         frame = PyKDL.Frame()
         joint = PyKDL.Joint(joint_movement[i])
@@ -27,9 +26,16 @@ def forward_kinematics(data):
         chain.addSegment(segment)
 
     joints = PyKDL.JntArray(n_joints)
-    joints[0] = data.position[0]
-    joints[1] = data.position[1]
-    joints[2] = -data.position[2]
+    for i in range(n_joints):
+        min_joint, max_joint = scope["joint"+str(i+1)]
+        if min_joint <= data.position[i] <= max_joint:
+            if i == 2:
+                joints[i] = -data.position[i]
+            else:
+                joints[i] = data.position[i]
+        else:
+            rospy.logwarn("Wrong joint value")
+            return
     fk=PyKDL.ChainFkSolverPos_recursive(chain)
     finalFrame=PyKDL.Frame()
     fk.JntToCart(joints,finalFrame)
@@ -74,8 +80,11 @@ def forward_kinematics(data):
 if __name__ == '__main__':
     rospy.init_node("KDL_KIN", anonymous=True)
     params = {}
+    scope = {}
     with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
         params = json.loads(file.read())
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/scope.json', 'r') as file:
+        scope = json.loads(file.read())
 
     pub = rospy.Publisher('kdl_pose', PoseStamped, queue_size=10)
     marker_pub = rospy.Publisher('kdl_visual', Marker, queue_size=100)
