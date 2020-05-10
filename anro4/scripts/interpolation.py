@@ -19,7 +19,9 @@ def interpolation_function(data):
         return {"status": False, "msg": "Wrong 2rd joint value"}
     if  data.j3<=0.05 or data.j3>=0.16:
         return {"status": False, "msg": "Wrong 3rd joint value"}
-    if  data.type not in msg_to_function.keys():
+    if  data.type in msg_to_function.keys():
+        interpol_function = msg_to_function[data.type]
+    else:
         return {"status": False, "msg": "Wrong interpolation type"}
 
     calculatedJointState=JointState()
@@ -31,9 +33,6 @@ def interpolation_function(data):
     #calculatedJointState.effort=[]
     #pub.publish(calculatedJointState)
     rate=rospy.Rate(f)
-
-    interpol_function = msg_to_function["spline"]
-
     frames_num= int(math.ceil(data.time*f))
 
     for actual_frame in range(0,frames_num+1):
