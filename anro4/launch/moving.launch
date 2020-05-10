@@ -1,6 +1,7 @@
 <launch>
-    <param name="robot_description" command="xacro --inorder '$(find anro3)/urdf/moving.urdf'"/>
+    <param name="robot_description" command="xacro --inorder '$(find anro4)/urdf/moving.urdf'"/>
     <param name ="use" value="true"/>
+    <arg name="rvizconfig" default="$(find anro4)/rviz/oint_rviz.rviz" />
     <param name ="publish_default_positions" value="true"/>
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
@@ -8,6 +9,6 @@
 	<rosparam param="source_list">["interpolation"]</rosparam>
     </node>
 	
-    <node name="rviz" pkg="rviz" type="rviz"  required="true"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  required="true"/>
 
 </launch>

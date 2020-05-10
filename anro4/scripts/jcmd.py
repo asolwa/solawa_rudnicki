@@ -2,13 +2,13 @@
 
 import sys
 import rospy
-from anro4.srv import interpol
+from anro4.srv import Interpol
 
 def interpolate(j1, j2, j3, t):
-    rospy.wait_for_service('interpol')
+    rospy.wait_for_service('Interpol_control')
     try:
-        add_two_ints = rospy.ServiceProxy('interpol', interpol)
-        resp = add_two_ints(j1, j2, j3, t)
+        int_srv = rospy.ServiceProxy('Interpol_control', Interpol)
+        resp = int_srv(j1, j2, j3, t)
         print(resp)
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
