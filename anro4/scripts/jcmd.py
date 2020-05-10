@@ -14,7 +14,7 @@ def interpolate(j1, j2, j3, t):
         print "Service call failed: %s"%e
 
 def usage():
-    return "%s [x y]"%sys.argv[0]
+    return "%s [j1.pos j2.pos j3.pos time]"%sys.argv[0]
 
 if __name__ == "__main__":
     if len(sys.argv) == 5:

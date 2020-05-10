@@ -7,7 +7,7 @@ from std_msgs.msg import Header
 import math
 
 f=10
-actual_pos=[0,0,0]
+actual_pos=[0,0,0.05]
 new_pos=[0,0,0]
 
 def interpolation_function(data):
