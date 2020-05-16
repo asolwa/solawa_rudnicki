@@ -1,0 +1,9 @@
+#request
+float64[] pos
+float64[] orient
+float64 time
+---
+#response
+bool status
+string msg
+
