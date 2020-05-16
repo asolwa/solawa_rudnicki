@@ -11,7 +11,6 @@ actual_pos=[0,0,0.05]
 new_pos=[0,0,0]
 
 def interpolation_function(data):
-
     if data.time<=0:
         return {"status": False, "msg": "Wrong time value"}
     if -1.57 >= data.j1 or data.j1>=1.57:
@@ -20,10 +19,13 @@ def interpolation_function(data):
         return {"status": False, "msg": "Wrong 2rd joint value"}
     if  data.j3<=0.05 or data.j3>=0.16:
         return {"status": False, "msg": "Wrong 3rd joint value"}
+    if  data.type in msg_to_function.keys():
+        interpol_function = msg_to_function[data.type]
+    else:
+        return {"status": False, "msg": "Wrong interpolation type"}
 
     calculatedJointState=JointState()
     calculatedJointState.header=Header()
-    calculatedJointState.header.stamp=rospy.Time.now()
     calculatedJointState.name=['base_to_link1','link1_to_link2','link2_to_link3']
     new_pos=[data.j1,data.j2,data.j3]
     #calculatedJointState.position=[0,0,0.12]
@@ -31,15 +33,14 @@ def interpolation_function(data):
     #calculatedJointState.effort=[]
     #pub.publish(calculatedJointState)
     rate=rospy.Rate(f)
-
     frames_num= int(math.ceil(data.time*f))
 
     for actual_frame in range(0,frames_num+1):
+        j1=interpol_function(actual_pos[0],new_pos[0],frames_num,actual_frame)
+        j2=interpol_function(actual_pos[1],new_pos[1],frames_num,actual_frame)
+        j3=interpol_function(actual_pos[2],new_pos[2],frames_num,actual_frame)
 
-        j1=linear_interpolation(actual_pos[0],new_pos[0],frames_num,actual_frame)
-        j2=linear_interpolation(actual_pos[1],new_pos[1],frames_num,actual_frame)
-        j3=linear_interpolation(actual_pos[2],new_pos[2],frames_num,actual_frame)
-
+        calculatedJointState.header.stamp=rospy.Time.now()
         calculatedJointState.position=[j1,j2,j3]
         calculatedJointState.velocity= []
         calculatedJointState.effort= []
@@ -54,9 +55,19 @@ def interpolation_function(data):
 def linear_interpolation(start,end,time,actual_time):
     return start+(float(end-start)/time)*actual_time
 
-if __name__ == '__main__':
+def spline_interpolation(start,end,end_time,actual_time):
+    t = actual_time / float(end_time)
+    s1 = (1 - t) * start    
+    s2 = t * end
+    s3 = t * (1 - t) * ((1 - t) * (start - end) + t * (end - start))
+    return s1 + s2 + s3
 
-    print("File works")
+msg_to_function = {
+    "linear": linear_interpolation,
+    "spline": spline_interpolation,
+}
+
+if __name__ == '__main__':
     rospy.init_node('interpol_srv', anonymous=True)
     pub = rospy.Publisher('interpolation', JointState, queue_size=10)
     s=rospy.Service('Interpol_control',Interpol,interpolation_function)
