@@ -96,11 +96,11 @@ Visualization Manager:
       Class: rviz/Pose
       Color: 255; 25; 0
       Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
+      Head Length: 0.10000000149011612
+      Head Radius: 0.05000000074505806
       Name: Pose
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
+      Shaft Length: 0.20000000298023224
+      Shaft Radius: 0.019999999552965164
       Shape: Arrow
       Topic: /oint_pose
       Unreliable: false
@@ -156,7 +156,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.3499055504798889
+      Distance: 1.0897668600082397
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -171,10 +171,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.1303987056016922
+      Pitch: 0.5353986024856567
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.966750144958496
+      Yaw: 3.5817487239837646
     Saved: ~
 Window Geometry:
   Displays:

@@ -1,59 +1,65 @@
 #!/usr/bin/env python
 
 import rospy
+from sensor_msgs.msg import JointState
 import json
 import os
 from geometry_msgs.msg import PoseStamped
-from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 from math import *
-
-def inverted_kinematics(data):
-	global a1
-	global a2
-	global d
+from tf.transformations import *
 
 
-	x = data.pose.position.x
-	y = data.pose.position.y
-	z = data.pose.position.z
-
-	dz = sqrt(x**2 + y**2)
-
-	alfa1 = atan2(y, x)
-
-	alfa2 = acos((-a2**2 + a1**2 + dz**2) / (2 * a1 * dz))
-	alfa3 = acos((a1**2 + a2**2 - dz**2) / (2 * a1 * a2))
-
-	theta1 = (alfa1 + alfa2, alfa1 - alfa2)
-	theta2 = (-pi + alfa3, pi - alfa3)
-	theta3 = -z
-
-	th1 = alfa1 + alfa2
-	th2 = -pi + alfa3
+param = {}
 
 
-	calculatedJointState = JointState()
-	calculatedJointState.header = Header()
-	calculatedJointState.header.stamp = rospy.Time.now()
-	calculatedJointState.name = ['base_to_link1', 'link1_to_link2', 'link2_to_link3']
+with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
+    param = json.loads(file.read())
 
-	calculatedJointState.position = [th1, th2, theta3]
-	calculatedJointState.velocity = []
-	calculatedJointState.effort = []
-	pub.publish(calculatedJointState)
+alpha1=0
+alpha2=0
+#joints_pos1=0
+#joints_pos2=0
+#joints_pos3=0
 
-if __name__ == "__main__":
+def callback(data):
+    calculatedJoints=JointState()
+    global alpha1
+    global alpha2 
 
-	params = {}
-	with open(os.path.dirname(os.path.realpath(__file__)) + '/../yaml/dh.json', 'r') as file:
-		params = json.loads(file.read())
+    x=data.pose.position.x
+    y=data.pose.position.y
+    z=data.pose.position.z
+    if x == 0 and y == 0:
+        x=0.1
+        y=0.1
+    a1,d,alpha,th=param["i2"]
+    a2,d,alpha,th=param["i3"]
+    przesuw=0.3-z
+        
+    alpha22=-acos((x**2+y**2-a1**2-a2**2)/(2*a1*a2))
+    alpha12=asin((a2*sin(alpha22))/(sqrt(x**2+y**2)))+atan2(y,x)
+    
+    alpha21=acos((x**2+y**2-a1**2-a2**2)/(2*a1*a2))
+    alpha11=-asin((a2*sin(alpha21))/(sqrt(x**2+y**2)))+atan2(y,x)
+    if fabs(alpha1-alpha11)>fabs(alpha1-alpha12) :
+        alpha1=alpha12
+        alpha2=alpha22
+    else :
+        alpha1=alpha11
+        alpha2=alpha21  
+ 
+    calculatedJoints.header = Header()
+    calculatedJoints.header.stamp = rospy.Time.now()
+    calculatedJoints.name = ['base_to_link1','link1_to_link2','link2_to_link3']
+    calculatedJoints.position= [ alpha1 , alpha2, przesuw ]
+    calculatedJoints.velocity= []
+    calculatedJoints.effort= []
+    pub.publish(calculatedJoints)
+    rospy.logerr(calculatedJoints.position[1])
 
-	a1 = float(params['i2'][0])
-	a2 = float(params['i3'][0])
-	d = float(params['i3'][1])
-	
-	rospy.init_node('ikin_node')
-	sub = rospy.Subscriber('oint_pose', PoseStamped, inverted_kinematics)
-	pub = rospy.Publisher('/joint_states', JointState, queue_size=10)
-	rospy.spin()
+if __name__ == '__main__':
+    pub = rospy.Publisher('/joint_states', JointState, queue_size = 100 )
+    rospy.init_node('IKIN', anonymous=True)
+    rospy.Subscriber("oint_pose", PoseStamped, callback)
+    rospy.spin()

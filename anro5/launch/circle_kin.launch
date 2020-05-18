@@ -10,11 +10,11 @@
     </node>
 
     <node name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
-	<rosparam param="source_list">["interpolation"]</rosparam>
+    <rosparam param="source_list">["interpolation"]</rosparam>
     </node>
-	
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  required="true"/>
-    <node name="ikin" pkg="anro5" type="ikin.py"/>
-    <node name="oint" pkg="anro5" type="oint.py"/>  
 
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  required="true"/>
+    <node name="oint" pkg="anro5" type="oint.py"/>
+    <node name="circle" pkg="anro5" type="ocmd_circle.py"/>
+    <node name="ikin" pkg="anro5" type="ikin.py"/>
 </launch>

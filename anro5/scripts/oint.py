@@ -9,7 +9,7 @@ from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 from tf.transformations import quaternion_from_euler
 
-f=50
+f=30
 new_pos=[0,0,0]
 new_orient = [0,0,0]
 start_pos=[0,0,0]
