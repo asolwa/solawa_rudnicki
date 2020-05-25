@@ -41,7 +41,7 @@ def callback(data):
     a2,d3,alpha2,th3=param["i3"]
     przesuw = d3-z
 
-    if x**2+y**2 > a1**2+a2**2:
+    if sqrt(x**2+y**2) > a1+a2:
         rospy.logerr("Blad zla pozycja zadana")
         return {"status": False, "message": "Zla pozycja zadana"}
 
@@ -64,10 +64,6 @@ def callback(data):
     calculatedJoints.velocity= []
     calculatedJoints.effort= []
     pub.publish(calculatedJoints)
-<<<<<<< HEAD
- 
-=======
->>>>>>> 5a90967e86ae20074b7f6eadaeb41b702a61a9f7
 
 if __name__ == '__main__':
     pub = rospy.Publisher('joint_states', JointState, queue_size = 100 )
