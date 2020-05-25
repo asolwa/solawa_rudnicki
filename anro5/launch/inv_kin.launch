@@ -12,5 +12,6 @@
 	
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  required="true"/>
     <node name="oint" pkg="anro5" type="oint.py"/>  
+    <node name="ikin" pkg="anro5" type="ikin.py"/>  
 
 </launch>
