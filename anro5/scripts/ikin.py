@@ -56,7 +56,7 @@ def callback(data):
     calculatedJoints.velocity= []
     calculatedJoints.effort= []
     pub.publish(calculatedJoints)
-    rospy.logerr(calculatedJoints.position[1])
+ 
 
 if __name__ == '__main__':
     pub = rospy.Publisher('/joint_states', JointState, queue_size = 100 )
